@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=, initial-scale=1.0">
+    <title>Document</title>
+    <link type="text/css" rel="stylesheet" href="style.css" />
+
+</head>
+
+    <body>
+        <br>
+        <div id="your_container">
+    
+            <!-- チャットの外側部分① -->
+            <div id="messages_container">
+                <!-- ヘッダー部分② -->
+                <div id="chat_header"></div>
+        
+    
+                <!-- タイムライン部分③ -->
+                <div id="messages">
+    
+                    <!--メッセージ１（左側）-->
+                    <div class="message_left">
+                        <div class="message_box">
+                            <div class="message_content">
+                                <div class="message_text">
+                                    ユーザー名さん、こんにちは！
+                                <br>
+                                これからMANTRAという治療メソッドに沿って、一緒に拒食症(神経性やせ症)に向き合っていくよ
+                                <br>
+                                ユーザー名さんは、今もしかしたら「拒食は自分の意思でやっていること」「拒食がなくなったら、自分が自分じゃなくなっちゃう！」
+                                と思っているかもしれないけれど…
+                                <br>
+                                実は拒食症という病気が、本来のあなたがやりたいこと・叶えたいことを邪魔してしまっているという可能性もあると思っているよ💦
+                                <br>
+                                一緒に、拒食症をすこーしだけ自分から切り離して、拒食症がなくなったらどうなるか、どうなりたいか…考えていけたら嬉しいな！
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clear"></div><!-- 回り込みを解除（スタイルはcssで充てる） -->
+    
+
+                    <div class="message_left">
+                        <div class="message_box">
+                            <div class="message_content">
+                                <div class="message_text">
+                                    まずは、ユーザー名さんにとって「変わる」こと、拒食を手放すことがどんな意味を持つのか、教えてほしいのです。
+                                    <br>
+                                    変わることは、ユーザー名さんにとってどれくらい重要そうかな？10点満点で、数字を打ち込んで教えてね。
+                                    <br>
+                                    1：まったく重要ではない
+                                    <br>
+                                    10：すごく重要
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clear"></div><!-- 回り込みを解除（スタイルはcssで充てる） -->
+            
+
+            </div>
+<!-- テキストボックス＋送信ボタン-->
+    <div id="send">
+        <textarea id="send_message"></textarea>
+        <div id="send_btn">送信</div>
+    </div>
+</div>
+</div>
+
+
+<!-- GoogleからJqueryを呼び出す -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+<!-- Firebaseを呼び出す -->
+<script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+    import { getDatabase, ref, push, set, onChildAdded, remove, onChildRemoved } 
+    from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+  
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyBFvUoTt4VP_JLJ4GFqD-RrwcKyKDenlSI",
+      authDomain: "mantra-f41e8.firebaseapp.com",
+      projectId: "mantra-f41e8",
+      storageBucket: "mantra-f41e8.appspot.com",
+      messagingSenderId: "519179303444",
+      appId: "1:519179303444:web:5f8acedf101a796ae84501"
+    };
+  
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const dbRef = ref(db,"useranswer")
+
+  </script>
+
+<script>
+    // もしユーザーがテキストボックスに入力して送信したら、その値を右側に表示させる
+    $(document).ready(function () {
+        $("#send_btn").on("click", function () {
+            //まずユーザーが送信したメッセージの値を取得
+            var message = $("#send_message").val();
+            //もしメッセージの値がから出ない場合、コンテナの右側にユーザーが入力したテキストを表示させるdivを作成する
+            if (message) {
+                var newmessageright = '<div class="message_right"><div class="message_box"><div class="message_content"><div class="message_text">' + message + '</div></div></div></div>';
+                // メッセージコンテナの最後に新しいメッセージを追加
+                $("#messages").append(newmessageright);
+                //メッセージのコンテナの最後に新しいメッセージが追加されたら、その１秒後に自動返信メッセージと次の質問が表示される
+                
+
+                setTimeout(function () {
+                    //一定時間の後にメッセージを表示するdivをまず作成する
+                    var newmessageleft = '<div class="message_left"><div class="message_box"><div class="message_content"><div class="message_text">教えてくれてありがとうです！<br>じゃあ次は「変わる」ということについて、なぜ変わりたいのか？そしてどんなふうに変わりたいのか？教えてもらえますか？</div></div></div></div>';
+                    // メッセージコンテナの最後に上記で追加した左側のメッセージを追加
+                    $("#messages").append(newmessageleft);
+                }, 1000); // 1秒後に左側にメッセージを表示
+
+                $("#send_btn").off()
+
+                //上述のクリックイベントの関数を削除して、関数を置き換える動作を入れ込む
+                $("#send_btn").on("click", function () {
+                    //まずユーザーが送信したメッセージの値を取得
+                    var message = $("#send_message").val();
+                    //もしメッセージの値がから出ない場合、コンテナの右側にユーザーが入力したテキストを表示させるdivを作成する
+                    if (message) {
+                        var newmessageright = '<div class="message_right"><div class="message_box"><div class="message_content"><div class="message_text">' + message + '</div></div></div></div>';
+                        // メッセージコンテナの最後に新しいメッセージを追加
+                        $("#messages").append(newmessageright);
+
+                    }
+                });
+            }
+            })
+            //Firebaseに回答を保存
+            const newPostRef = push(dbRef);
+            set(newPostRef, message);
+    });
+
+
+</script>
+    </body>
+
+<!--  -->
+
+
+    
+</div>
+
+<!-- </body> -->
+</html>
